@@ -986,3 +986,187 @@ console.log(location.pathname);
 console.log(location.search);
 console.log(location.state?.fromUrl);
 ```
+
+### 4.16. NavLink 이해하기
+
+- 현재 라우터의 path 에 맞게 css 적용해줌.
+- /src/components/layout/Header.js
+  : `import { NavLink } from "react-router-dom";`
+
+#### 4.16.1. CSS Object 로 지정하는 경우
+
+```js
+import { NavLink } from "react-router-dom";
+const Header = ({ children }) => {
+  // js 자리
+  // 현재 패스와 같은 경우에 보여줄 css Object 생성
+  const ActiveLink = {
+    color: "red",
+    fontWeight: "bold",
+  };
+
+  return (
+    <header className="header">
+      <ul>
+        <li>
+          <NavLink
+            to="/"
+            style={({ isActive }) => (isActive ? ActiveLink : undefined)}
+          >
+            홈
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/company"
+            style={({ isActive }) => (isActive ? ActiveLink : undefined)}
+          >
+            회사소개
+          </NavLink>
+          <ul>
+            <li>
+              <NavLink
+                to="/company/ceo?name=홍길동&age=30"
+                style={({ isActive }) => (isActive ? ActiveLink : undefined)}
+              >
+                대표 소개
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/company/history"
+                style={({ isActive }) => (isActive ? ActiveLink : undefined)}
+              >
+                회사 연혁
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/company/partner"
+                style={({ isActive }) => (isActive ? ActiveLink : undefined)}
+              >
+                파트너사
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/company/location"
+                style={({ isActive }) => (isActive ? ActiveLink : undefined)}
+              >
+                회사위치
+              </NavLink>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <NavLink
+            to="/good"
+            style={({ isActive }) => (isActive ? ActiveLink : undefined)}
+          >
+            제품소개
+          </NavLink>
+        </li>
+      </ul>
+
+      {children}
+    </header>
+  );
+};
+
+export default Header;
+```
+
+#### 4.16.2. CSS 파일로 지정하는 경우
+
+- src/css/header.css
+
+```css
+.active-link {
+  color: red;
+  font-weight: bold;
+}
+```
+
+- /src/components/layout/Header.js
+
+```js
+import { NavLink } from "react-router-dom";
+import "../../css/header.css";
+const Header = ({ children }) => {
+  // js 자리
+  // 현재 패스와 같은 경우에 보여줄 css Object 생성
+  const ActiveLink = {
+    color: "red",
+    fontWeight: "bold",
+  };
+
+  return (
+    <header className="header">
+      <ul>
+        <li>
+          <NavLink
+            to="/"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            홈
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/company"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            회사소개
+          </NavLink>
+          <ul>
+            <li>
+              <NavLink
+                to="/company/ceo?name=홍길동&age=30"
+                className={({ isActive }) => (isActive ? "active-link" : "")}
+              >
+                대표 소개
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/company/history"
+                className={({ isActive }) => (isActive ? "active-link" : "")}
+              >
+                회사 연혁
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/company/partner"
+                className={({ isActive }) => (isActive ? "active-link" : "")}
+              >
+                파트너사
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/company/location"
+                className={({ isActive }) => (isActive ? "active-link" : "")}
+              >
+                회사위치
+              </NavLink>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <NavLink
+            to="/good"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            제품소개
+          </NavLink>
+        </li>
+      </ul>
+
+      {children}
+    </header>
+  );
+};
+
+export default Header;
+```
