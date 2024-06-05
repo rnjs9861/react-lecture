@@ -164,8 +164,7 @@ const Schedule = () => {
       <h1>캘린더출력</h1>
       <div style={scWrap}>
         <Calendar
-          calendarType="gregory"
-          formatShortWeekday={formatShortWeekday}
+          ....
           tileClassName={tileClassName}
         ></Calendar>
       </div>
@@ -211,7 +210,9 @@ const todoApi = [
     img: "/logo192.png",
   },
 ];
+
 const [allData, setAllData] = useState([]);
+
 useEffect(() => {
   setAllData(todoApi);
 
@@ -358,6 +359,7 @@ const formatDay = (locale, date) => {
 // 날짜 선택시 처리
 const [clickDay, setClickDay] = useState("");
 const [clickInfo, setClickInfo] = useState(null);
+
 const onClickDay = (value, event) => {
   const checkDay = moment(value).format("YYYY-MM-DD");
   setClickDay(checkDay);
@@ -393,5 +395,138 @@ const [clickDay, setClickDay] = useState(moment().format("YYYY-MM-DD"));
 <Calendar
   ...
   value={clickDay}
+></Calendar>
+```
+
+### 5.8. 캘린더 기본 일정(Range) 출력하기 설정
+
+```js
+// 날짜의 범위 초기값
+const initRange = {
+  start: "2024-06-01",
+  end: "2024-06-07",
+};
+// 화면에 출력할 날짜 sate 관리
+// react-calendar 에서는 JS의 Date 객체를 사용합니다.
+// 단지 우리가 moment 로 글자를 변환해서 보여줄 뿐
+const [selectedRange, setSelectedRange] = useState([
+  new Date(initRange.start),
+  new Date(initRange.end),
+]);
+// Range 를 사용하는 경우의 날짜 꾸미기
+const tileClassNameRange = ({ date }) => {
+  // console.log(date);
+  const checkDay = moment(date).format("YYYY-MM-DD");
+  if (checkDay >= initRange.start && checkDay <= initRange.end) {
+    // CSS 적용하기
+    return "sun";
+  }
+};
+```
+
+```js
+<Calendar
+  ....
+  selectRange={true}
+  value={selectedRange}
+  tileClassName={tileClassNameRange}
+></Calendar>
+```
+
+### 5.9. 캘린더 외부 API 의 일정(Range) 출력하기 설정
+
+```js
+// 외부 데이터의 내용을 날짜에 출력하기
+// axios.get("todos") 리턴결과
+const todoApi = [
+  {
+    pk: 0,
+    title: "점심먹기",
+    text: "내용 1",
+    startday: "2024-06-01",
+    endday: "2024-06-04",
+    img: "/logo192.png",
+  },
+  {
+    pk: 1,
+    title: "영화보기",
+    text: "내용 2",
+    startday: "2024-05-01",
+    endday: "2024-06-04",
+    img: "/logo192.png",
+  },
+  {
+    pk: 2,
+    title: "책읽기",
+    text: "내용 3",
+    startday: "2024-06-05",
+    endday: "2024-06-07",
+    img: "/logo192.png",
+  },
+  {
+    pk: 3,
+    title: "그림그리기",
+    text: "내용 4",
+    startday: "2024-06-09",
+    endday: "2024-06-15",
+    img: "/logo192.png",
+  },
+];
+```
+
+- 반복해서 내용 출력하기
+
+```js
+// Range를 사용하는 경우 내용 출력하기
+const tileContentRange = ({ date }) => {
+  const checkDay = moment(date).format("YYYY-MM-DD");
+  // 1. 배열의 각 요소를 찾는다.
+  // 2. 찾은 요소의 값을 이용한다.
+  const dayResults = allData.filter(item => {
+    return checkDay >= item.startday && checkDay <= item.endday;
+  });
+  if (dayResults.length > 0) {
+    return (
+      <div>
+        {dayResults.map(dayResult => (
+          <div key={dayResult.pk}>
+            <h2>{dayResult.title}</h2>
+            <div>
+              <img
+                src={dayResult.img}
+                alt={dayResult.title}
+                style={{ width: "10px", height: "10px" }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+};
+```
+
+- 반복해서 CSS 꾸미기
+
+```js
+const tileClassNameRange = ({ date }) => {
+  const checkDay = moment(date).format("YYYY-MM-DD");
+
+  const isRange = allData.some(
+    item => checkDay >= item.startday && checkDay <= item.endday,
+  );
+  if (isRange) {
+    return "sun";
+  }
+};
+```
+
+```js
+<Calendar
+...
+  selectRange={true}
+  value={selectedRange}
+  tileClassName={tileClassNameRange}
+  tileContent={tileContentRange}
 ></Calendar>
 ```
