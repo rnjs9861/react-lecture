@@ -87,6 +87,14 @@ const Header = ({ children }) => {
             일정
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/file"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            파일업로드
+          </NavLink>
+        </li>
 
         {isUser ? (
           <>

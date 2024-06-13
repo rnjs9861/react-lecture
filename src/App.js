@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import Join from "./pages/member/Join";
 import Login from "./pages/member/Login";
 import { UserInfoProvider } from "./context/UserInfoProvider";
+import File from "./pages/File";
 
 function App() {
   // 복잡한 데이터
@@ -73,6 +74,7 @@ function App() {
             <Route path="/schedule" element={<Schedule />}></Route>
             <Route path="/join" element={<Join />}></Route>
             <Route path="/login" element={<Login />}></Route>
+            <Route path="/file" element={<File />}></Route>
 
             {/* 잘못된 경로 */}
             <Route path="*" element={<NotFound />}></Route>
