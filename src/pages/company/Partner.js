@@ -1,5 +1,3 @@
-import React from "react";
-
 const Partner = ({ pc }) => {
   return (
     <div>

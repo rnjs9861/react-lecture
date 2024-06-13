@@ -1,7 +1,5 @@
-import React from "react";
-
 const NotFound = () => {
-  return <h1>없는 페이지 입니다.</h1>;
+  return <div>잘못된 경로로 접근하셨습니다.</div>;
 };
 
 export default NotFound;
