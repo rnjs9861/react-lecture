@@ -28,12 +28,16 @@ const File = () => {
     // 웹브라우저는 이미지를 캐시에 보관함.
     // 임시 공간에 저장한 이미지를 우리는 경로를 알아내야 한다.
     // 그때 웹브라우저 상의 임시 URL 을 알아내는 기능 제공한다.
-    const tempUrl = URL.createObjectURL(tempFile);
-    console.log(tempUrl);
-    setPreviewPreImg(tempUrl);
-
-    // 전송할 파일 변경(주의합니다. 파일을 넣어주세요.)
-    setImgFile(tempFile);
+    if (tempFile) {
+      const tempUrl = URL.createObjectURL(tempFile);
+      console.log(tempUrl);
+      setPreviewPreImg(tempUrl);
+      // 전송할 파일 변경(주의합니다. 파일을 넣어주세요.)
+      setImgFile(tempFile);
+    } else {
+      setPreviewPreImg("");
+      setImgFile(null);
+    }
   };
   const handleSubmit = e => {
     // 기본기능막기
@@ -62,7 +66,7 @@ const File = () => {
       [JSON.stringify({ username: userName, userhobby: userHobby })],
       { type: "application/json" },
     );
-    console.log(dto);
+    // console.log(dto);
     formData.append("p", dto);
     // file 추가하기
     formData.append("petImage", imgFile);
@@ -113,7 +117,7 @@ const File = () => {
           <legend>정보3</legend>
           <div>
             이미지 미리보기 <br />
-            <img src={previewImg} />
+            {previewImg ? <img src={previewImg} /> : null}
           </div>
           <input
             type="file"

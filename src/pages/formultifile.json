@@ -1,0 +1,29 @@
+{
+  "p": {
+    "calendarId": state,
+    "signedUserId": state,
+    "title": "input",
+    "content": "input",
+    "startDay": "input",
+    "deadLine": "input",
+    "existTag": [
+      1,
+      2
+    ],
+    "notExistTag": [
+      {
+        "calendarId": 2,
+        "title": "태그1",
+        "color": 1
+      },{
+        "calendarId": 2,
+        "title": "태그1",
+        "color": 1
+      }
+    ],
+    "dDay": "input"
+  },
+  "files": [
+    "string"
+  ]
+}

@@ -95,6 +95,22 @@ const Header = ({ children }) => {
             파일업로드
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/animaladd"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            애완동물 등록하기
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/multifule"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            멀티파일 등록하기
+          </NavLink>
+        </li>
 
         {isUser ? (
           <>
