@@ -1,15 +1,18 @@
-import React from 'react'
+import { Home } from "./pages/Home";
 
 const App = () => {
-  return (
-    <div class="wrap">
-      <header class="header">
-     
-      </header>
-      <main class="main"></main>
-      <footer class="footer"></footer>
-    </div>
-  )
-}
+  // js 자리
 
-export default App
+
+
+  return (
+    <div className="wrap">
+            
+            
+            
+             <Home /> 
+    </div>
+  );
+};
+
+export default App;
