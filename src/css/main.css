@@ -1,0 +1,13 @@
+.wrap {
+  position: relative;
+  background: "red";
+}
+.wrap .header button {
+  border: 5px solid "blue";
+}
+
+@media screen and (max-width: 1920px) {
+  .wrap {
+    background: orange;
+  }
+}

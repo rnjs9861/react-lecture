@@ -1,0 +1,14 @@
+@import "valiables";
+@import "mixin";
+.wrap {
+  position: relative;
+  background: $main-color;
+  .header button {
+    @include bt("blue");
+  }
+}
+@media screen and (max-width: $wide-screen) {
+  .wrap {
+    background: orange;
+  }
+}

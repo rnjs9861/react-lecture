@@ -1,5 +1,17 @@
+// import "../../css/header.css";
+import styled from "@emotion/styled";
+
 export const Header = ({ login }) => {
   return (
-    <header className="header">{login ? "정보수정" : "로그인필요"}</header>
+    <header>
+      <LogoDiv className="logo">
+        <a href="http://www.naver.com">네이버</a>
+        <a href=""></a>
+      </LogoDiv>
+      <GnbDiv className="gnb">
+        <MemberDiv>메뉴</MemberDiv>
+      </GnbDiv>
+      <div>회원기능</div>
+    </header>
   );
 };
