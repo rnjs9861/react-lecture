@@ -2,6 +2,14 @@
 import styled from "@emotion/styled";
 
 export const Header = ({ login }) => {
+  const LogoDiv = styled.div`
+    background-color: ${props => props.bg};
+    width: ${props => props.w}px;
+    height: ${props => props.h}px;
+    visibility: ${props => (props.visible ? "visible" : "hidden")};
+    margin: 0 auto;
+    border: 5px solid red;
+  `;
   return (
     <header>
       <LogoDiv className="logo">
