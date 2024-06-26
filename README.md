@@ -417,10 +417,10 @@ export const Header = ({ login }) => {
 
 ```js
 const LogoDiv = styled.div`
-  background-color: ${props.bg};
-  width: ${props.w}px;
-  height: ${props.h}px;
-  visibility: ${props.visible ? "visible" : "hidden"};
+  background-color: ${props => props.bg};
+  width: ${props => props.w}px;
+  height: ${props => props.h}px;
+  visibility: ${props => (props.visible ? "visible" : "hidden")};
   margin: 0 auto;
   border: 5px solid red;
 `;
