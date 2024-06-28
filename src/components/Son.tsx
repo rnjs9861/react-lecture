@@ -6,6 +6,7 @@ interface SonProps {
   info: { name: string; age: number };
   children?: React.ReactNode;
 }
+
 const Son = ({ title, hobby, say, info, children }: SonProps): JSX.Element => {
   return (
     <div>
