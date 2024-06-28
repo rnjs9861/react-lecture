@@ -43,75 +43,6 @@ const [user, setUser] = useState<{
 }>(member);
 ```
 
-## 3. state 에 여러 종류 데이터 명시하기
-
-```ts
-import React, { useState } from "react";
-// props 데이터 정의(형태만들기)
-// 개발자가 데이터 정의할때 문법 ( interface, type )
-interface AppRootProps {
-  children?: React.ReactNode;
-}
-
-// 사용자 데이터 정의
-interface IUser {
-  pk: number;
-  id: string;
-  level: number;
-  login?: boolean;
-}
-
-const AppRoot: React.FC<AppRootProps> = ({ children }) => {
-  const [count, setCount] = useState<number>(0);
-  const [name, setName] = useState<string>("");
-  const [login, setLogin] = useState<boolean>(false);
-  const [todos, setTodos] = useState<[]>([]);
-  const [info, setInfo] = useState<null>(null);
-  // 객체 데이터 정의하기
-  const member = {
-    pk: 1,
-    id: "hong",
-    level: 10,
-  };
-  const [user, setUser] = useState<IUser>(member);
-  //여러가지 종류의 데이터를 기본 값으로 설정
-  const [userValue, setUserValue] = useState<number | string>(0);
-  setUserValue("A");
-
-  const [userPoint, setUserPoint] = useState<boolean | null | undefined>(false);
-  setUserPoint(null);
-  setUserPoint(undefined);
-
-  return (
-    <div>
-      {count}
-      {name}
-      {login}
-      {todos}
-      {info}
-      {user.pk}
-    </div>
-  );
-};
-// const AppRoot = ({ children }: AppRootProps): JSX.Element => {
-//   return <div></div>;
-// };
-// const AppRoot: React.FC<AppRootProps> = ({ children }: AppRootProps): JSX.Element => {
-//   return <div></div>;
-// };
-
-export default AppRoot;
-
-```
-```ts
-interface IStudent {
-  pk: number;
-  name: string;
-  hobby: string;
-}
-```
-
-
 - interfac 로 업데이트 하기
 
 ```ts
@@ -122,7 +53,6 @@ interface IUser {
   level: number;
   login?: boolean;
 }
-
 // 객체 데이터 정의하기
 const member = {
   pk: 1,
@@ -131,7 +61,50 @@ const member = {
 };
 const [user, setUser] = useState<IUser>(member);
 ```
+
+## 3. state 에 여러 종류 데이터 명시하기
+
+```ts
+// 여러가지 종류의 데이터를 기본 값으로 설정
+const [userValue, setUserValue] = useState<number | string>(0);
+setUserValue("A");
+const [userPoint, setUserPoint] = useState<boolean | null | undefined | string>(
+  false,
+);
+setUserPoint(null);
+setUserPoint(undefined);
+setUserPoint(true);
+setUserPoint(0);
+setUserPoint("1200");
+```
+
 ## 4. state 에 배열에 데이터 명시하기
+
+```ts
+// 학생정보 데이터모양
+interface IStudent {
+  pk: number;
+  name: string;
+  hobby: string;
+}
+
+// 배열에 데이터 명시하기
+const [tourList, setTourList] = useState<string[]>(["대구", "광주", "경주"]);
+const [priceList, setPriceList] = useState<number[]>([1000, 2000, 3000]);
+const [good, setGoood] = useState<(string | number | boolean)[]>([
+  "수박",
+  5000,
+  0.5,
+  true,
+]);
+const students = [
+  { pk: 1, name: "홍길동", hobby: "축구" },
+  { pk: 2, name: "고길동", hobby: "등산" },
+  { pk: 3, name: "박길동", hobby: "산책" },
+];
+const [studentList, setStudentList] = useState<IStudent[]>(students);
+```
+
 ### 1.1. 일반 변수일 경우
 
 - 일반변수가 값이 변경이 되면 해당 컴포넌트에 값은 바뀐다.
