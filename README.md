@@ -1,177 +1,241 @@
-# axios
+# axios TS버전
 
-- [axios](https://axios-http.com/kr/docs/intro)
+## 1. axios 설치(TS)
 
-## 1. REST API 연동 기본
+- `npm install axios`
+- `npm install @types/axios`
+  : ts 인 경우에는 axios 의 타입 정의된 내용이 필요하다.
 
-### 1.1. CRUD
+## 2. JSX 를 리턴하지 않으므로 확장자가 ts 이다.
 
-- Create : post
-- Read : get
-- Update : put(전체 수정), patch(항목 중 일부 수정)
-- Delete : delete
+- 확장자 변경 (js ---> ts)
+  : `/src/apis/todos/apistodos.js`
+  : `/src/apis/todos/apistodos.ts`
 
-### 1.2. 연동 테스트
-
-- Postman : 기본
-- Swagger : 백엔드에서 구축을 해주어야 함.
-
-### 1.3. Proxy 설정
-
-- 서비스 하는 컴퓨터가 다를 때
-- 백엔드에서 구축한 API 서버와 프론트엔드 서버가 다를 때 오류발생
-  : CORS 에러(접근권한 없다는 에러)
-  : 개발 중에 자주 발생
-  : `npm run build` 후에 파일 전달시까지 테스트 곤란
-- 개발 중에 하나의 컴퓨터에서 API 에 접근하는 것처럼 진행을 위해서 proxy 설정
-- package.json 에 proxy 셋팅
-  : `"proxy": "주소:port번호"`
-
-## 2. axios 설치
-
-- `npm i axios`
-
-## 3. axios 구성 권장
-
-- 폴더
-  : `/src/apis` 폴더 생성
-- axios 환경 설정 파일
-  : `/src/apis/config.js` 파일 생성
-
-## 4. axios 권장하는 코딩 자리 및 순서이해
-
-- useEffect 에서 작성 및 호출
-  : 화면을 보여줄 때 원하는 tag 에 보여주는 게 일반적
-  : 화면이 완성되어 보여지는 시점이 useEffect 이므로
-
-### 4.1. 기본 코드
-
-: 아래 처럼해도 됩니다.
-: 하지만, axios 호출 함수가 지역변수 이므로 재호출 곤란
-
-```js
+```ts
 import axios from "axios";
-import React, { useEffect } from "react";
+// import { ITodo } from "../../types/todotype";
+const todoURL = "https://jsonplaceholder.typicode.com/todos/";
 
-const App = () => {
-  getLists();
+// 자주 활용되는 데이터 모양을 위해서
+// api 호출 시 전달되는 매개변수 모양
+// api 호출 이후  리턴되는 데이터의 모양
+export interface ITodo {
+  userId?: number;
+  id?: number;
+  title?: string;
+  completed?: boolean;
+}
 
-  useEffect(() => {
-    const getLists = async () => {
-      try {
-        const res = await axios.get("주소");
-        // data 속성은 axios 의 기본 객체 속성
-        console.log(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    // axios 호출
-    getLists();
-  }, []);
-  return <div></div>;
+// 자료 1개 호출하기
+const getTodo = async (id: number): Promise<ITodo> => {
+  try {
+    const res = await axios.get(`${todoURL}${id}`);
+    console.log(res);
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+// 자료 여러개 호출하기
+const getTodos = async (): Promise<ITodo[]> => {
+  try {
+    const res = await axios.get(todoURL);
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+// 자료 1개 추가하기
+const postTodo = async ({ title, completed }: ITodo): Promise<ITodo> => {
+  try {
+    const res = await axios.post(todoURL, { title, completed });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+// 자료 1개 전체 내용 업데이트 하기
+// put 은 어떤 대상을 업데이트한다.
+const putTodo = async (
+  id: number,
+  { title, completed }: ITodo,
+): Promise<ITodo> => {
+  try {
+    const res = await axios.put(`${todoURL}${id}`, { title, completed });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+// 자료 1개 중 일부분 내용 업데이트 하기
+// patch 은 어떤 대상을 일부분만 업데이트한다.
+const patchTodo = async (id: number, { title }: ITodo): Promise<ITodo> => {
+  try {
+    const res = await axios.patch(`${todoURL}${id}`, { title });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+// 자료 1개 삭제하기
+const deleteTodo = async (id: number): Promise<ITodo> => {
+  try {
+    const res = await axios.delete(`${todoURL}${id}`);
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };
 
-export default App;
+export { getTodo, getTodos, postTodo, putTodo, patchTodo, deleteTodo };
 ```
 
-: 여러번 호출하기 위해서 외부로 이동
-: 외부로 이동한 것은 잘했지만, 코드 대단히 복잡하다.
-: 데이터를 보여주는 것이 컴포넌트인데,
-: 데이터를 호출하는 것도 컴포넌트에서 관리?
+## 3. axios 에 정의한 매개변수 및 리턴 타입의 데이터 모양을 재활용
 
-- 웹 서비스가 간단한 결과물이면 이렇게 관리를 해도 괜찮을 것 같다.
-- 하지만, 리액트를 도입하는 서비스는 실제로 대단히 복잡해집니다.
-- 그래서, 아래 방식도 그렇게 권장하지는 않는다.
-- 결론은 데이터 호출 코드는 외부 파일로 만드시길 권장합니다.
+- `/src/types` 폴더 지정
+  : axios 뿐만 아니라 여러 컴포넌트에 활용된 데이터 모양들을 정의함.
+  : 컴포넌트에 전달하는 Props 등에 대한 데이터 모양들도 정의함.
+  : 일반적으로 interface 정의 및 type 정의가 포함됩니다.
+  : 참고로 interface 와 type은 용도가 똑같으므로 호환이 가능하다.
+- `/src/types/todotype.ts`
 
-```js
+```ts
+export interface ITodo {
+  userId?: number;
+  id?: number;
+  title?: string;
+  completed?: boolean;
+}
+```
+
+- `/src/apis/todos/apistodos.ts`
+
+```ts
 import axios from "axios";
-import React, { useEffect } from "react";
+import { ITodo } from "../../types/todotype";
+const todoURL = "https://jsonplaceholder.typicode.com/todos/";
 
-const App = () => {
-  const getLists = async () => {
-    try {
-      const res = await axios.get("주소");
-      // data 속성은 axios 의 기본 객체 속성
-      console.log(res.data);
-    } catch (error) {
-      console.log(error);
-    }
+// 자료 1개 호출하기
+const getTodo = async (id: number): Promise<ITodo> => {
+  try {
+    const res = await axios.get(`${todoURL}${id}`);
+    console.log(res);
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+// 자료 여러개 호출하기
+const getTodos = async (): Promise<ITodo[]> => {
+  try {
+    const res = await axios.get(todoURL);
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+// 자료 1개 추가하기
+const postTodo = async ({ title, completed }: ITodo): Promise<ITodo> => {
+  try {
+    const res = await axios.post(todoURL, { title, completed });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+// 자료 1개 전체 내용 업데이트 하기
+// put 은 어떤 대상을 업데이트한다.
+const putTodo = async (
+  id: number,
+  { title, completed }: ITodo,
+): Promise<ITodo> => {
+  try {
+    const res = await axios.put(`${todoURL}${id}`, { title, completed });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+// 자료 1개 중 일부분 내용 업데이트 하기
+// patch 은 어떤 대상을 일부분만 업데이트한다.
+const patchTodo = async (id: number, { title }: ITodo): Promise<ITodo> => {
+  try {
+    const res = await axios.patch(`${todoURL}${id}`, { title });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+// 자료 1개 삭제하기
+const deleteTodo = async (id: number): Promise<ITodo> => {
+  try {
+    const res = await axios.delete(`${todoURL}${id}`);
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export { getTodo, getTodos, postTodo, putTodo, patchTodo, deleteTodo };
+```
+
+## 4. axios 정의한 기능을 호출하기
+
+- `/src/AppRoot.tsx`
+
+```tsx
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useEffect } from "react";
+import { getTodo } from "./apis/todos/apistodos";
+import { getPhoto, getPhotos } from "./apis/photos/apisphotos";
+// 정의해 둔 데이터 모양을 부른다.
+import { ITodo } from "./types/todotype";
+import { IPhoto } from "./types/phototype";
+
+const AppRoot = () => {
+  const getTodoOne = async () => {
+    const result: ITodo = await getTodo(3);
+    console.log(result);
+  };
+
+  const getPhotoOne = async () => {
+    const result: IPhoto = await getPhoto(3);
+    console.log(result);
+  };
+  const getPhotoAll = async () => {
+    const result: IPhoto[] = await getPhotos();
   };
 
   useEffect(() => {
-    // axios 호출
-    getLists();
+    getTodoOne();
   }, []);
   return <div></div>;
 };
 
-export default App;
-```
-
-- /src/apis/기능별.js 를 만들기를 권장함
-  : /src/apis/sampleApi.js
-
-```js
-import axios from "axios";
-
-export const getLists = async () => {
-  try {
-    const res = await axios.get("주소");
-    // data 속성은 axios 의 기본 객체 속성
-    console.log(res.data);
-  } catch (error) {
-    console.log(error);
-  }
-};
-```
-
-- App.js
-
-```js
-import { useEffect } from "react";
-import { getLists } from "./apis/sampleApi";
-
-const App = () => {
-  useEffect(() => {
-    // axios 호출
-    getLists();
-  }, []);
-  return <div></div>;
-};
-
-export default App;
-```
-
-
-## 5. 샘플 코드
-- https://jsonplaceholder.typicode.com/
-- API 문서를 보면
-  : /posts   100 posts
-  : /comments   500 comments
-  : /albums   100 albums
-  : /photos   5000 photos
-  : /todos   200 todos
-  : /users   10 users
-- /src/apis/각 폴더 생성을 권장함.
-- /src/apis/photos/apisphotos.js
-- /src/apis/todos/apistodos.js
-
-
-
-
-## 6. 파일업로드
-
-### 6.1 JSX
-: 12-file 브랜치 참조
-```js
-<input type="file" onChange={e=>{handleFileChange(e)}}>
-```
-
-```js
-const handleFileChange = (e) => {
-  const file = e.target.files
-}
+export default AppRoot;
 ```
