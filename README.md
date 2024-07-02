@@ -1,41 +1,41 @@
-# Local Storage TS 버전
+# Session Storage TS 버전
 
-## 1. localStorage 에 정보 저장
+## 1. Session Storage 에 정보 저장
 
-- `/src/pages/member/LoginLocal.js`
+- `/src/pages/member/LoginSession.js`
 
 ```js
 import React, { useEffect, useState } from "react";
 
-const LoginLocal = () => {
-  // LocalStorage 에서 가져오므로 null 을 기본값셋팅
+const LoginSession = () => {
+  // SessionStorage 에서 가져오므로 null 을 기본값셋팅
   const [userId, setUserId] = useState(null);
-  // 1. localStorage 읽기
+  // 1. SessionStorage 읽기
   useEffect(() => {
-    const userLS = localStorage.getItem("userId");
+    const userLS = sessionStorage.getItem("userId");
     if (userId) {
       setUserId(userLS);
     }
   }, []);
-  // 3. localStorage 삭제하기
+  // 3. sessionStorage 삭제하기
   const handleLogout = e => {
     console.log("로그아웃");
     const userTyping = "";
     setUserId(userTyping);
-    localStorage.removeItem("userId");
+    sessionStorage.removeItem("userId");
   };
 
-  // 2. localStorage 업데이트하기
+  // 2. sessionStorage 업데이트하기
   const handleLogIn = e => {
     console.log("로그인 시도");
     const userTyping = "abc1234";
     setUserId(userTyping);
-    localStorage.setItem("userId", userTyping);
+    sessionStorage.setItem("userId", userTyping);
   };
 
   return (
     <div>
-      <h1>Login Local Storage</h1>
+      <h1>Login Session Storage</h1>
       {userId ? (
         <div>
           <p>로그인됨 : {userId}</p>
@@ -51,43 +51,43 @@ const LoginLocal = () => {
   );
 };
 
-export default LoginLocal;
+export default LoginSession;
 ```
 
--`/src/pages/member/LoginLocalTs.tsx`
+-`/src/pages/member/LoginSessionTs.tsx`
 
 ```ts
 import React, { MouseEvent, useEffect, useState } from "react";
 
-const LoginLocalTs: React.FC = () => {
-  // LocalStorage 에서 가져오므로 null 을 기본값셋팅
+const LoginSessionTs: React.FC = () => {
+  // SessionStorage 에서 가져오므로 null 을 기본값셋팅
   const [userId, setUserId] = useState<string | null>(null);
-  // 1. localStorage 읽기
+  // 1. SessionStorage 읽기
   useEffect(() => {
-    const userLS = localStorage.getItem("userId");
+    const userLS = sessionStorage.getItem("userId");
     if (userId) {
       setUserId(userLS);
     }
   }, []);
-
-  // 3. localStorage 삭제하기
+  // 3. sessionStorage 삭제하기
   const handleLogout = (e: MouseEvent<HTMLButtonElement>) => {
     console.log("로그아웃");
     const userTyping = "";
     setUserId(userTyping);
-    localStorage.removeItem("userId");
+    sessionStorage.removeItem("userId");
   };
 
-  // 2. localStorage 업데이트하기
+  // 2. sessionStorage 업데이트하기
   const handleLogIn = (e: MouseEvent<HTMLButtonElement>) => {
     console.log("로그인 시도");
     const userTyping = "abc1234";
     setUserId(userTyping);
-    localStorage.setItem("userId", userTyping);
+    sessionStorage.setItem("userId", userTyping);
   };
+
   return (
     <div>
-      <h1>Login Local Storage</h1>
+      <h1>Login Session Storage</h1>
       {userId ? (
         <div>
           <p>로그인됨 : {userId}</p>
@@ -103,6 +103,7 @@ const LoginLocalTs: React.FC = () => {
   );
 };
 
-export default LoginLocalTs;
+export default LoginSessionTs;
+
 
 ```
