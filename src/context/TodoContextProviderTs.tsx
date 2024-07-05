@@ -39,7 +39,7 @@ const initialState: TodoState = {
   nextId: JSON.parse(localStorage.getItem("nextId") || "1") as number,
 };
 
-interface Action {
+export interface Action {
   type: string;
   payload: Todo;
 }
