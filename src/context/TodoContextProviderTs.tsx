@@ -74,7 +74,7 @@ const todoReducer = (state: TodoState, action: Action): TodoState => {
   }
 };
 
-interface TodoContextProviderTsProps {
+export interface TodoContextProviderTsProps {
   children?: React.ReactNode;
 }
 const TodoContextProviderTs: React.FC<TodoContextProviderTsProps> = ({

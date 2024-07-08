@@ -1,17 +1,14 @@
-# Todo 서비스를 Context API 와 useReducer 로 만들기
+# Redux Toolkit
+- 전역 상태 (state) 관리 도구 중 가장 많이 사용
+- 전역 상태가 변하면 앱 전체가 리랜더링
+- 컴포넌트 리랜더링(useState)
+- 전역 상태 리랜더링은 (index.js, App.js) 
+- https://ko.redux.js.org/introduction/getting-started
 
-## 1. 기본 구조
+# 설치
 
-- /src/AppTodoTs.tsx 생성
-  : Context API 로 상태를 관리한 내용을 공급(Provider) 역할
 
-- /src/context/TodoContextProviderTs.tsx 파일생성
-  : Context 와 Reducer 를 통해서 상태관리 기능 지원
-
-- /src/component/todo 폴더생성
-
-- /src/component/todo/TodoAddTs.tsx
-  : Context 업데이트(Reduce 의 dispatch 적용)
-
-- /src/component/todo/TodoListTs.tsx
-  : Context 정보 보여주기 및 업데이트(Reduce 의 dispatch 적용)
+# Redux 학습 순서는 아래를 기준으로 함.
+- 무조건 샘플 코드의 순서로 진행.
+- 폴더 규칙도 순서대로 진행.
+  
