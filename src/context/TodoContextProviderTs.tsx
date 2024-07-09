@@ -14,11 +14,11 @@ export interface TodoContextType {
 export const TodoContext = createContext<TodoContextType | null>(null);
 
 export interface Todo {
-  uid?: number;
+  uid?: number | null | undefined;
   content?: string;
   isComplted?: boolean;
 }
-export interface TodoState {
+interface TodoState {
   todos: Todo[];
   nextId: number;
 }
@@ -74,7 +74,7 @@ const todoReducer = (state: TodoState, action: Action): TodoState => {
   }
 };
 
-export interface TodoContextProviderTsProps {
+interface TodoContextProviderTsProps {
   children?: React.ReactNode;
 }
 const TodoContextProviderTs: React.FC<TodoContextProviderTsProps> = ({

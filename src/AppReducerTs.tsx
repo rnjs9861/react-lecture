@@ -4,6 +4,7 @@ import BucketProviderTs, { BucketContext } from "./context/BucketProviderTs";
 const AppReducerTs: React.FC = () => {
   // const { state, dispatch } = useContext(BucketContext);
   const context = useContext(BucketContext);
+  // 초기에 context 가 null 기본 값을 가짐.
   if (!context) {
     throw new Error("null 입니다.");
   }

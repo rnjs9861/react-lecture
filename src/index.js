@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import AppTodoTs from "./AppTodoTs";
 import AppJWT from "./AppJWT";
 
 // ts 에서는 데이터 종류를 구별한다.

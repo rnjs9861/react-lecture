@@ -1,13 +1,5 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  createContext,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, createContext } from "react";
 import { UserInfo } from "../types/UserInfo";
-
-// 추후 export 할 자료 모양이므로
 
 interface LoginContextProps {
   userInfo: UserInfo | null;

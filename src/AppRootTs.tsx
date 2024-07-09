@@ -1,5 +1,5 @@
 import React, { MouseEvent, useContext } from "react";
-import LoginProvider, { LoginContext } from "./context/LoginProvider";
+import { LoginContext, LoginProvider } from "./context/LoginProvider";
 
 const AppRootTs: React.FC = () => {
   const { userInfo, userLang, setUserInfo } = useContext(LoginContext);

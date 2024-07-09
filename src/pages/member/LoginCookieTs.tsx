@@ -1,5 +1,5 @@
 import React, { MouseEvent, useEffect, useState } from "react";
-import { getCookie, removeCookie, setCookie } from "../utils/cookie";
+import { getCookie, removeCookie, setCookie } from "../../utils/cookie";
 
 const LoginCookieTs: React.FC = () => {
   // Cookie 에서 가져오므로 null 을 기본값셋팅

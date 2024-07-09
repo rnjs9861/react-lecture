@@ -29,8 +29,8 @@ const Login = () => {
       // sessionStorage.setItem("userid", userId);
       setCookie("userid", userId, {
         path: "/",
-        expire: new Date(Date.now() + 86400e3), //만료시간 설정
-        maxAge: 86400, //1일동안 유효
+        expire: new Date(Date.now() + 86400e3), // 1일 후 만료시간 설정
+        maxAge: 86400, // 1일 동안 유효
       });
       //setUserId(userId);
       setIsUser(userId);

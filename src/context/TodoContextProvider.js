@@ -68,7 +68,6 @@ const TodoContextProvider = ({ children }) => {
     localStorage.setItem("todos", JSON.stringify(state.todos));
     localStorage.setItem("nextId", JSON.stringify(state.nextId));
   }, [state]);
-
   return (
     <TodoContext.Provider value={{ state: state.todos, dispatch }}>
       {children}
