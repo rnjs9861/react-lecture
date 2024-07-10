@@ -2,13 +2,14 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../slices/loginSlice";
 import { changeRed } from "../slices/themeSlice";
-const Menu = () => {
+import { AppDispatch, RootState } from "../store";
+const Menu: React.FC = () => {
   // slice 정보 출력하기
   // useSelector 는 slice의 정보를 가져온다.
-  const loginState = useSelector(state => state.loginSlice);
-  console.log(loginState);
+  const loginState = useSelector((state: RootState) => state.loginSlice);
+  // console.log(loginState);
   // 로그인 하기 (action 실행)
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const handleClickLogin = () => {
     // slice 의 action 을 실행시
     const data = { email: "aaa@aaa.net", userName: "홍길동", userLevel: 10 };
@@ -18,8 +19,7 @@ const Menu = () => {
     // slice 의 action 을 실행시
     dispatch(logout());
   };
-
-  const handleClickTheme = () => {
+  const handelClickTheme = () => {
     dispatch(changeRed());
   };
 
@@ -27,7 +27,7 @@ const Menu = () => {
     <div>
       <button
         onClick={() => {
-          handleClickTheme();
+          handelClickTheme();
         }}
       >
         테마바꾸기
@@ -38,7 +38,7 @@ const Menu = () => {
           <li>
             <div>이메일 : {loginState.email}</div>
             <div>유저이름 : {loginState.userName} </div>
-            <div>유저레벨 : {loginState.useLevel} </div>
+            <div>유저레벨 : {loginState.userLevel} </div>
             <button
               onClick={() => {
                 handleClickLogout();
