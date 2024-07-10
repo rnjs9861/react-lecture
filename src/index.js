@@ -1,16 +1,13 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+import RTKSample from "./RTKSample";
 import "./index.css";
-import App from "./App";
-// ts 에서는 데이터 종류를 구별한다. (as는 강제로 타입지정)
-// const root = ReactDOM.createRoot(
-//   document.getElementById("root") as HTMLElement
-// );
-
-// js 버전
+import store from "./store";
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+// Redux Toolkit 저장소 공급
 root.render(
-  <>
-    <App />
-  </>
+  <Provider store={store}>
+    <RTKSample />
+  </Provider>,
 );
