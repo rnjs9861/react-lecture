@@ -5,8 +5,9 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { IFromUrl, IQueryData } from "../../types/datatype";
 
-const Good = () => {
+const Good: React.FC = () => {
   // 현재 주소 및 패스 알아내기
   const location = useLocation();
   console.log(location);
@@ -24,12 +25,13 @@ const Good = () => {
 
   // 2. 조금 문법을 좋아하시는 분들은 아래를 사용합니다.
   const specialNavi = () => {
-    const queryStr = createSearchParams({
+    const queryData: IQueryData = {
       name: "길동",
-      age: 100,
-    }).toString();
+      age: "100",
+    };
+    const queryStr = createSearchParams({ ...queryData }).toString();
     // console.log(queryStr);
-    const fromUrl = {
+    const fromUrl: IFromUrl = {
       memo: "제품페이지에서 왔어요.",
       good: "제품 1번을 보고 있었지요.",
       favorite: "제품 1에 관심이 많네요.",

@@ -1,6 +1,9 @@
-import React from "react";
+import { IArr } from "../../types/datatype";
 
-const Partner = ({ pc }) => {
+interface PartnerProps {
+  pc: IArr[];
+}
+const Partner: React.FC<PartnerProps> = ({ pc }) => {
   return (
     <div>
       <h1>파트너 소개</h1>

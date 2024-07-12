@@ -2,30 +2,31 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
+
 // Index 라는 이름 충돌로 변경함
-import Company from "./pages/company/Index";
 import Home from "./pages/Index";
-import GoodDetail from "./pages/goods/Detail";
+import Compony from "./pages/company/Index";
+import GoodDeatil from "./pages/good/Detail";
 import Ceo from "./pages/company/Ceo";
 import History from "./pages/company/History";
 import Partner from "./pages/company/Partner";
-import Good from "./pages/goods/Good";
+import Good from "./pages/good/Good";
 import { useState } from "react";
+import { IArr } from "./types/datatype";
 
-function App() {
+function App(): JSX.Element {
   // 복잡한 데이터
-  const arr = [
+  const arr: IArr[] = [
     { name: "삼성전자", link: "http://" },
-    { name: "SK", link: "http://" },
-    { name: "LG", link: "http://" },
+    { name: "LG전자", link: "http://" },
+    { name: "그린컴퓨터", link: "http://" },
   ];
-
   // 로그인 안된 경우
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState<boolean>(true);
 
   return (
     <BrowserRouter>
-      {/* 공통 레이아웃 적용 */}
+      {/* 공통레이아웃 적용 */}
       <div className="wrap">
         <Header>
           {isLogin ? (
@@ -36,12 +37,13 @@ function App() {
         </Header>
 
         <Routes>
-          {/* 루트 경로 */}
-          <Route path="/" element={<Home />}></Route>
+          {/* 루트경로 */}
+          <Route path="/" element={<Home></Home>}></Route>
 
           <Route path="/company">
-            {/* path상 기본페이지 */}
-            <Route index element={<Company />}></Route>
+            {/* 패스 상 기본페이지 */}
+            <Route index element={<Compony></Compony>}></Route>
+
             <Route path="ceo" element={<Ceo></Ceo>}></Route>
             <Route
               path="history"
@@ -51,17 +53,18 @@ function App() {
               path="partner"
               element={<Partner pc={arr}></Partner>}
             ></Route>
-            <Route path="location" element={<h1>회사위치</h1>}></Route>
+            <Route path="location" element={<h1>회사 위치</h1>}></Route>
           </Route>
 
           <Route path="/good" element={<Good></Good>}>
             <Route
               path=":id"
-              element={<GoodDetail title={"좋은 회사"}></GoodDetail>}
+              element={<GoodDeatil title={"좋은 회사"}></GoodDeatil>}
             ></Route>
             <Route path="delete/:id" element={<h1>제품 삭제</h1>}></Route>
             <Route path="modify/:id" element={<h1>제품 수정</h1>}></Route>
           </Route>
+
           {/* 잘못된 경로 */}
           <Route path="*" element={<h1>잘못된 경로입니다.</h1>}></Route>
         </Routes>
