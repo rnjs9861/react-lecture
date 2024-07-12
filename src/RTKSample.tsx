@@ -22,10 +22,10 @@ const RTKSample: React.FC = () => {
   // store 에서 정의한 action 즉, RootState 업데이트 함수
   const dispatch = useDispatch<AppDispatch>();
   const handleClickKR = () => {
-    dispatch(changeKor(1));
+    dispatch(changeKor());
   };
   const handleClickEN = () => {
-    dispatch(changeEng(1));
+    dispatch(changeEng());
   };
   const handleClickETC = () => {
     dispatch(changeEtc({ word: "울라불라 쉬었다 갈게요." }));
@@ -40,7 +40,7 @@ const RTKSample: React.FC = () => {
     // dispatch(showUser());
     // 비동기 extraReducer 호출
     dispatch(getUserAsyncThunk());
-    // dispatch(postLoginAsyncThunk());
+    //dispatch(postLoginAsyncThunk());
     // const result = await postLogin();
     // dispatch(userlogin(result));
   };

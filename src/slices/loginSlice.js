@@ -16,17 +16,15 @@ const loginSlice = createSlice({
     // 두번째 매개변수는 action 즉, 업데이트 할 데이터
     // action 은 type 과 payload 가 있다.
     login: (state, action) => {
-      // action 은 payLoad 가 있다.
-      console.log("state : ", state);
-      console.log("action : ", action);
-      console.log("Login.....");
+      // action 은 payload 가 있습니다.
+      // console.log("state : ", state);
+      // console.log("action : ", action);
+      // console.log("Login.....");
       return { ...state, ...action.payload };
     },
     logout: () => {
-      console.log("LogOut!!!!");
-      return {
-        ...initialState,
-      };
+      // console.log("LogOut!!!!");
+      return { ...initialState };
     },
   },
 });
