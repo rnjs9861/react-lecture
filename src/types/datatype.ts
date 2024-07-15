@@ -16,3 +16,17 @@ export interface IActiveLink {
   color: string;
   fontWeight: string;
 }
+
+
+
+
+// 라인 차트 데이터 모양
+export interface DataPoint {
+  x: string;
+  y: number;
+}
+export interface Series {
+  id: string;
+  color: string;
+  data: DataPoint[];
+}
