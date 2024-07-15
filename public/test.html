@@ -5,27 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
-      .active {
+      .wrap {
+        position: relative;
+        display: block;
+        width: 80%;
+        background-color: orange;
+        margin: 0 auto;
+      }
+      .header {
+        height: 80px;
+        background-color: skyblue;
+      }
+      .slide {
+        height: 300px;
+        background-color: orchid;
+      }
+
+      .box {
+        width: 50px;
+        height: 50px;
         background-color: red;
+        animation-name: fadeInRotate;
+        animation-duration: 5s;
+        animation-iteration-count: infinite;
+      }
+      .box:hover {
+        animation-timing-function: ease;
+      }
+
+      @keyframes fadeInRotate {
+        0% {
+          opacity: 1;
+          transform: rotate(0deg);
+        }
+        30% {
+          opacity: 0;
+          transform: rotate(360deg) scale(5);
+        }
+        60% {
+          opacity: 1;
+          transform: rotate(0deg);
+        }
+        90% {
+          opacity: 0;
+          transform: rotate(45deg);
+        }
+        100% {
+          opacity: 1;
+          transform: rotate(0deg);
+        }
+      }
+
+      .board {
+        height: 400px;
+        background-color: brown;
+      }
+      .footer {
+        height: 80px;
+        background-color: black;
       }
     </style>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const uId = document.querySelector(".uid");
-        console.log(uId);
-        uId.addEventListener("focus", function () {
-          this.classList.add("active");
-        });
-        uId.addEventListener("blur", function () {
-          this.classList.remove("active");
-        });
-        uId.addEventListener("keyup", function (e) {
-          console.log(e.target.value);
-        });
-      });
-    </script>
   </head>
   <body>
-    <input type="text" class="uid" />
+    <div class="wrap">
+      <header class="header">상단</header>
+      <div class="slide">
+        <div class="box"></div>
+      </div>
+      <div class="board">게시판</div>
+      <footer class="footer">하단</footer>
+    </div>
   </body>
 </html>
