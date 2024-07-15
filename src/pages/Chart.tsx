@@ -49,6 +49,7 @@ const Chart: React.FC = () => {
           pointLabel="data.yFormatted"
           pointLabelYOffset={-12}
           areaOpacity={0}
+          isInteractive={false}
           enableTouchCrosshair={true}
           useMesh={true}
           legends={[
@@ -77,6 +78,7 @@ const Chart: React.FC = () => {
               ],
             },
           ]}
+          animate={false}
         />
       </div>
     </div>
