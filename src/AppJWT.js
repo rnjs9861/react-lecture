@@ -2,8 +2,13 @@ import { useEffect } from "react";
 import jwtAxios from "./apis/jwtUtil";
 import axios from "axios";
 import { setCookie } from "./utils/cookie";
+import { useDispatch } from "react-redux";
 
 const AppJWT = () => {
+  // loginSlice action 실행하기
+  const dispatch = useDispatch();
+  // dispatch(login(값))
+
   // 회원로그인 해서 인증키 받기
   const handleLogin = () => {
     postLogin();
@@ -17,6 +22,7 @@ const AppJWT = () => {
     // 로그인에 성공하면 accesstoken 을 받을 수 있다.
     console.log(res.data);
     // 아래처럼 쿠키로 저장해둔다.
+    // dispatch 를 이용해서 전역변수 쓰기
     setCookie("accessToken", res.data.accessToken);
   };
 

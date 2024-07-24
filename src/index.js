@@ -2,6 +2,9 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import AppTodoTs from "./AppTodoTs";
 import AppJWT from "./AppJWT";
+// 전역 상태 변수
+import store from "./store/store";
+import { Provider } from "react-redux";
 
 // ts 에서는 데이터 종류를 구별한다.
 // as 는 강제로 타입지정
@@ -10,4 +13,8 @@ import AppJWT from "./AppJWT";
 // js 버전
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-root.render(<AppJWT />);
+root.render(
+  <Provider store={store}>
+    <AppJWT />
+  </Provider>,
+);
