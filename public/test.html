@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .active {
+        background-color: red;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const uId = document.querySelector(".uid");
+        console.log(uId);
+        uId.addEventListener("focus", function () {
+          this.classList.add("active");
+        });
+        uId.addEventListener("blur", function () {
+          this.classList.remove("active");
+        });
+        uId.addEventListener("keyup", function (e) {
+          console.log(e.target.value);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <input type="text" class="uid" />
+  </body>
+</html>

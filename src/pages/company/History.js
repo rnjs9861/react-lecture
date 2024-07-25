@@ -1,5 +1,3 @@
-import React from "react";
-
 const History = ({ title, year }) => {
   return (
     <div>

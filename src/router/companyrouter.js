@@ -1,6 +1,6 @@
 import { Suspense, lazy } from "react";
 import { Navigate } from "react-router-dom";
-import Loading from "../loading/loading";
+import Loading from "../components/loading/Loading";
 
 const LazyCeo = lazy(() => import("../pages/company/Ceo"));
 const LazyHistory = lazy(() => import("../pages/company/History"));
