@@ -158,3 +158,5 @@ export default goodrouter;
 
 - 모든 React Router Dom 에서의 기능은 BrowserRoute 안쪽에 배치
   : Link, NavLink 등..
+
+- createBrowserRouter 를 활용하는 경우에 내부에 배치해야 한다.
