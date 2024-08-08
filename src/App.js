@@ -34,7 +34,7 @@ const App = () => {
           path="/todo"
           element={
             <ProtectedRoute>
-              <Todo />
+              <Profile />
             </ProtectedRoute>
           }
         ></Route>
