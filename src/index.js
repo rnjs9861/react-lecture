@@ -1,8 +1,15 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import App from "./App";
-
+import "./index.css";
+import { BrowserRouter, Routes } from "react-router-dom";
+import { RecoilRoot } from "recoil";
+// js 버전
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-root.render(<App />);
+root.render(
+  <BrowserRouter>
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
+  </BrowserRouter>,
+);

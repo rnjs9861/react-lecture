@@ -1,43 +1,78 @@
-# FB 회원기능
+# Recoil 적용
 
-## 1. FB 셋팅
+- `npm install recoil`
 
-- [참조문서](https://firebase.google.com/docs?hl=ko)
-- Authentication 기능활성
-- Storage 기능활성
-- Fire Store 기능활성
-- Hosting 기능 활성
+## 1. RecoilRoot 적용
 
-## 2. 커스텀 훅
+- index.js
 
-- /src/hooks/useAuth.js
+```js
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
+import { BrowserRouter } from "react-router-dom";
+import { RecoilRoot } from "recoil";
+// js 버전
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
+root.render(
+  <BrowserRouter>
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
+  </BrowserRouter>,
+);
+```
+
+## 2. atom 들을 생성
+
+- /src/atoms/userAtom.js 생성
+
+```js
+import { atom } from "recoil";
+
+// 사용자의 DB 상에 저장된 정보
+// {email:"", name:"", imageUrl:"http~"}
+export const recoil_UserData = atom({
+  key: "userDataState",
+  default: null,
+});
+```
+
+## 3. atom 활용
+
+- /hooks/useAuth.js
 
 ```js
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, storage, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import { useRecoilState } from "recoil";
+import { recoil_UserCurrent, recoil_UserData } from "../atoms/userAtom";
 
 const useAuth = () => {
-  // 사용자 있냐 없냐
-  const [user, setUser] = useState(false);
-  // 사용자 정보를 저장함.
-  // Navbar 또는 Profile, EditProfile 에 출력할 내용
-  const [userData, setUserData] = useState(null);
+  // FB 사용자 인증 정보
+  const [userCurrent, setUserCurrent] = useState(null);
+  // 사용자 정보를 저장함
+  // const [userData, setUserData] = useState(null);
+  // 사용자 정보를 저장함
+  const [rUserData, setRUserData] = useRecoilState(recoil_UserData);
 
   // 사용자 정보를 읽어들임
   const fetchUserData = async who => {
+    // console.log("인증 실시간 결과 알려줌. fetchUserData ", who);
     if (!who) {
       return;
     }
     // 문서를 만든다.
     const userInfoGetDoc = doc(db, "users", who.uid);
-    // 문서의 내용을 Get 하는 방식
     const docSnap = await getDoc(userInfoGetDoc);
     // 위의 구문을 실행후 문서가 존재한다면 실행하라.
     if (docSnap.exists()) {
-      // console.log("Document data:", docSnap.data());
-      setUserData(docSnap.data());
+      // {name:"홍길동", email:"a@a.net", imageUrl: "~~~"}
+      // setUserData(docSnap.data());
+      setRUserData(docSnap.data());
     } else {
       // docSnap.data() will be undefined in this case
       console.log("No such document!");
@@ -46,22 +81,28 @@ const useAuth = () => {
 
   // FB 는 로그인 시도를 하면 사용자의 로그인 상태를 실시간으로 변경
   useEffect(() => {
-    // FB 연결하면 사용자의 인증 즉, 로그인, 회원가입, 로그안 실행
+    // FB 연결하면 사용자의 인증 즉, 로그인, 회원가입, 로그인 실행
     // 자동으로 onAuthStateChanged 가 실행된다.
     const onAuth = onAuthStateChanged(auth, async who => {
+      //console.log("인증 실시간 결과 알려줌. onAuthStateChanged ", who);
+
       if (who) {
+        // console.log(who);
+        // console.log(auth.currentUser);
+        // who == auth.currentUser 이다.
+        setUserCurrent(who);
+
+        // 이놈이 문제 입니다.
+        // (Firebase Auth 관련 문제로 보여짐)
+        // setRUserCurrent(who);
         // const uid = who.uid;
-        // console.log("사용자 상태가 바뀜 uid : ", uid);
-        // 로그인에 의해 리턴된 모든 정보를 보관해 둔다.
-        // console.log("사용자 정보 : ", who);
-        // 로그인했으므로 true
-        setUser(true);
         // DataBase 에 진입해서 사용자 정보관련 내용을 읽어들인다.
         await fetchUserData(who);
       } else {
         // 로그아웃 실시간 처리
-        setUserData(null);
-        setUser(false);
+        // setUserData(null);
+        setRUserData(null);
+        setUserCurrent(null);
       }
     });
 
@@ -69,97 +110,117 @@ const useAuth = () => {
     return () => onAuth();
   }, []);
 
-  return { user, setUser, userData, setUserData };
+  return {
+    // userData,
+    // setUserData,
+    userCurrent,
+    setUserCurrent,
+  };
 };
 export default useAuth;
 ```
 
-## 3. App.js
+## 4. 적용
+
+- /src/App.js
 
 ```js
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { recoil_UserData } from "./atoms/userAtom";
 import EditProfile from "./components/EditProfile";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import Profile from "./components/Profile";
-import Todo from "./components/Todo";
-import useAuth from "./hooks/useAuth";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Todo from "./components/Todo";
 
 const App = () => {
-  const { user } = useAuth();
+  const [rUserData, setRUserData] = useRecoilState(recoil_UserData);
   return (
-    <BrowserRouter>
-      {user && <Navbar />}
-      <Routes>
-        <Route path="/" element={<Login />}></Route>
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path="/edit-profile"
-          element={
-            <ProtectedRoute>
-              <EditProfile />
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path="/todo"
-          element={
-            <ProtectedRoute>
-              <Todo />
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route path="*" element={<h1>경로가 잘못되었습니다.</h1>}></Route>
-      </Routes>
-    </BrowserRouter>
+    <>
+      {rUserData ? (
+        <>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Navigate to={"/todo"} />}></Route>
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/edit-profile"
+              element={
+                <ProtectedRoute>
+                  <EditProfile />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/todo"
+              element={
+                <ProtectedRoute>
+                  <Todo />
+                </ProtectedRoute>
+              }
+            ></Route>
+          </Routes>
+        </>
+      ) : (
+        <Login />
+      )}
+    </>
   );
 };
 
 export default App;
 ```
 
-## 3. /src/components/App.js
+- /src/components/ProtectedRouter.js
 
 ```js
-import { Navigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { Navigate, useLocation } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { recoil_UserData } from "../atoms/userAtom";
 
 const ProtectedRoute = ({ children }) => {
-  const user = useAuth();
-  return user ? children : <Navigate to="/" />;
+  // const userCurrent = useAuth(); // 사용자 정보를 저장함
+  const [rUserData, setRUserData] = useRecoilState(recoil_UserData);
+  const location = useLocation();
+  console.log("location ", location);
+  return rUserData ? children : <Navigate to={location.pathname} />;
 };
 
 export default ProtectedRoute;
 ```
 
-## 4. /src/components/Login.js
-
-- 회원가입
-- 파일저장
-- 문서등록
+- /src/components/Login.js
 
 ```js
-import React, { useState } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useState } from "react";
 
-import { auth, storage, db } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { recoil_UserData } from "../atoms/userAtom";
+import { auth, db, storage } from "../firebaseConfig";
+import useAuth from "../hooks/useAuth";
 
 const Login = () => {
+  const { userCurrent, setUserCurrent } = useAuth();
+  // 사용자 정보를 저장함
+  const [rUserData, setRUserData] = useRecoilState(recoil_UserData);
+
   // 패스이동하기
   const navigate = useNavigate();
   // 현재 화면 상태 관리
@@ -185,7 +246,7 @@ const Login = () => {
       // FileReader 사용해 보기 (Blob 처리)
       const reader = new FileReader();
       reader.onloadend = () => {
-        console.log(reader);
+        // console.log(reader);
         setPreviewImage(reader.result);
       };
       reader.readAsDataURL(file);
@@ -197,7 +258,6 @@ const Login = () => {
       handleAuth();
     }
   };
-
   // 실제로 FB 는 이메일 기준
   const handleAuth = () => {
     if (!email) {
@@ -208,7 +268,7 @@ const Login = () => {
       setError("비밀번호를 입력하세요.");
       return;
     }
-    // console.log("FB 로그인 시도 처리");
+    console.log("FB 로그인 시도 처리");
     fbLogin();
   };
 
@@ -253,7 +313,6 @@ const Login = () => {
     // 사용자 이미지 파일은 체크 하지 않았어요.
     // 만약, 이미지 업로드 안한 경우는 기본형 이미지 제공 예정
     // console.log("FB 회원정보 등록 시도 처리");
-
     fbJoin();
   };
 
@@ -265,27 +324,32 @@ const Login = () => {
         email,
         pw,
       );
-      const user = userCredential.user;
-      // console.log(userCredential);
+      // useState 는 실시간 갱신이 안되고, 함수종료되어야 갱신
+      setUserCurrent(userCredential.user);
+      // setRUserCurrent(userCredential.user);
       // storage : 이미지 파일 업로드
       let imageUrl = "";
       // 사용자가 이미지를 업로드 한다면
       if (image) {
         // Storage 에 보관
         // users폴더 / 사용자폴더 / profile.png
-        const imageRef = ref(storage, `users/${user.uid}/profile.png`);
+        const imageRef = ref(
+          storage,
+          `users/${userCredential.user.uid}/profile.png`,
+        );
         await uploadBytes(imageRef, image);
         // db 에 저장하려고 파일의 URL 파악한다.
         imageUrl = await getDownloadURL(imageRef);
-        // console.log("업로드된 이미지의 경로 ", imageUrl);
+        console.log("업로드된 이미지의 경로 ", imageUrl);
       }
       // database : 사용자 닉네임, 이메일, 사용자 이미지 URL 추가
-      const userDoc = doc(db, "users", user.uid);
+      const userDoc = doc(db, "users", userCredential.user.uid);
       await setDoc(userDoc, { name, email, imageUrl });
       // 사용자 등록을 하면 즉시 FB 는 로그인 상태로 처리.
       // UI 와 흐름이 맞지 않으므로 강제로 로그아웃을 시킨다.
       await signOut(auth);
-
+      setUserCurrent(null); // 인증정보삭제
+      setRUserData(null);
       setError("");
       setName("");
       setEmail("");
@@ -297,8 +361,8 @@ const Login = () => {
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      // console.log("errorCode : ", errorCode);
-      // console.log("errorMessage : ", errorMessage);
+      console.log("errorCode : ", errorCode);
+      console.log("errorMessage : ", errorMessage);
       switch (errorCode) {
         case "auth/invalid-email":
           setError("이메일을 바르게 입력해주세요.");
@@ -465,123 +529,56 @@ const Login = () => {
 export default Login;
 ```
 
-## 5. /src/components/Navbar.js
-
-- 로그아웃
+- /src/Profile.js
 
 ```js
-import React from "react";
-import useAuth from "../hooks/useAuth";
-import { Link, useNavigate } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
-import { signOut } from "firebase/auth";
-import { auth } from "../firebaseConfig";
-
-const Navbar = () => {
-  const { user, setUser, userData, setUserData } = useAuth();
-  const navigate = useNavigate();
-  const handleLogout = async () => {
-    // FB 에서 로그아웃
-    await signOut(auth);
-    setUserData(null);
-    setUser(false);
-    // 로그인으로 이동
-    navigate("/");
-  };
-  // 사용자 로그인 안했다면 Navbar 출력하지 않는다.
-  if (!user) {
-    return null;
-  }
-  return (
-    <nav className="bg-gray-400 p-4">
-      <ul className="flex justify-around items-center">
-        <li>
-          <Link to={"/todo"} className="text-white hover:underline">
-            할일 목록
-          </Link>
-        </li>
-        {userData && (
-          <li className="text-white ml-4 flex items-center">
-            <Link
-              to={"/profile"}
-              className="flex items-center mr-4 hover:underline"
-            >
-              {userData.imageUrl ? (
-                <img
-                  src={userData.imageUrl}
-                  alt="Profile Image"
-                  className="w-8 h-8 rounded-full mr-2"
-                />
-              ) : (
-                <FaUserCircle className="w-8 h-8 text-gray-500 mr-2" />
-              )}
-              {userData.name} {userData.email}
-            </Link>
-
-            <button
-              onClick={() => {
-                handleLogout();
-              }}
-              className="p-2 bg-red-500 rounded text-white hover:bg-red-600"
-            >
-              로그아웃
-            </button>
-          </li>
-        )}
-      </ul>
-    </nav>
-  );
-};
-
-export default Navbar;
-```
-
-## 6. /src/components/Profile.js
-
-- 회원탈퇴(사용자삭제, 이미지삭제, db 삭제, 상태업데이트)
-
-```js
-import React from "react";
-import useAuth from "../hooks/useAuth";
-import { FaUserCircle } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { db, storage } from "../firebaseConfig";
+import { deleteUser } from "firebase/auth";
 import { deleteDoc, doc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
-import { deleteUser } from "firebase/auth";
+import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { recoil_UserData } from "../atoms/userAtom";
+import { db, storage } from "../firebaseConfig";
+import useAuth from "../hooks/useAuth";
 
 const Profile = () => {
-  const userObject = useAuth();
+  const { userCurrent } = useAuth();
+  // 사용자 정보를 저장함
+  const [rUserData, setRUserData] = useRecoilState(recoil_UserData);
 
   const navigate = useNavigate();
   const handleClickEdit = () => {
     navigate("/edit-profile");
   };
+
   const handleClickDeleteUser = async () => {
     // console.log(userObject.userCurrent);
-
-    // 탈퇴여부 확인
+    // 탈퇴 여부 확인
     const flag = window.confirm(
-      "정말로 회원탈퇴 하시겠습니까? \n이 작업은 되돌리수 없습니다.",
+      "정말 탈퇴 하시겠습니까? \n이 작업은 되돌릴 수 없습니다.",
     );
 
     if (flag) {
       try {
         // 1. db 문서 삭제
-        const userDocRef = doc(db, "users", userObject.userCurrent.uid);
+        const userDocRef = doc(db, "users", userCurrent?.uid);
         await deleteDoc(userDocRef);
         // 2. image 파일 삭제
-        if (userObject.userData.imageUrl) {
+        if (rUserData?.imageUrl) {
           const imageRef = ref(
             storage,
-            `users/${userObject.userCurrent.uid}/profile.png`,
+            `users/${userCurrent?.uid}/profile.png`,
           );
           await deleteObject(imageRef);
         }
         // 3. 사용자 삭제
-        await deleteUser(userObject.userCurrent);
+        await deleteUser(userCurrent);
         // 4. 안내창
         alert("회원탈퇴가 완료되었습니다.");
+
+        setRUserData(null);
+
         // 5. 패스이동("/")
         navigate("/");
       } catch (error) {
@@ -590,22 +587,23 @@ const Profile = () => {
       }
     }
   };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="text-2xl font-bold mb-4">프로필</h1>
-      {userObject.userData && (
+      {rUserData && (
         <div className="flex flex-col items-center">
-          {userObject.userData.imageUrl ? (
+          {rUserData?.imageUrl ? (
             <img
-              src={userObject.userData.imageUrl}
+              src={rUserData?.imageUrl}
               alt="Profile Image"
               className="w-32 h-32 rounded-full mr-2"
             />
           ) : (
-            <FaUserCircle className="w-32 h-32 text-gray-500 mr-2" />
+            <FaUserCircle className="w-32 h-32 text-gray-400 mr-2" />
           )}
-          <p className="text-lg mb-2">이름: {userObject.userData.name}</p>
-          <p className="text-lg mb-4">이메일: {userObject.userData.email}</p>
+          <p className="text-lg mb-2">이름 : {rUserData?.name}</p>
+          <p className="text-lg mb-4">이메일 : {rUserData?.email}</p>
           <div className="flex space-x-4">
             <button
               onClick={() => {
@@ -633,8 +631,205 @@ const Profile = () => {
 export default Profile;
 ```
 
-## 7. /src/components/EditProfile.js
-- 이름 수정
-- 비밀번호 수정
-- 이미지 추가 또는 수정
-- 
+- /src/EditProfile.js
+
+```js
+import { updatePassword } from "firebase/auth";
+import { doc, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { recoil_UserData } from "../atoms/userAtom";
+import { db, storage } from "../firebaseConfig";
+import useAuth from "../hooks/useAuth";
+
+const EditProfile = () => {
+  const navigate = useNavigate();
+  // 커스텀 훅 사용
+  const { userCurrent } = useAuth();
+  // console.log("EditProfile userCurrent : ", userCurrent);
+  // 사용자 정보를 저장함
+  const [rUserData, setRUserData] = useRecoilState(recoil_UserData);
+
+  // 변경해야할 변수
+  const [name, setName] = useState("");
+  const [orginName, setOriginName] = useState("");
+  const [email, setEmail] = useState("");
+  const [pw, setPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [image, setImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [originImage, setOriginImage] = useState(null);
+
+  // 이미지 수정하기
+  const handleChangeImage = e => {
+    const file = e.target.files[0];
+    if (file) {
+      // 전송용 파일
+      setImage(file);
+      // file 을 미리보기로 만든다.
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  // FB 데이터 업데이트
+  const handleClickUpdate = async () => {
+    if (!name) {
+      alert("이름을 입력하세요.");
+      return;
+    }
+    if (!pw) {
+      //alert("비밀번호를 입력하세요.");
+      return;
+    }
+    if (!confirmPw) {
+      alert("비밀번호 확인를 입력하세요.");
+      return;
+    }
+    if (pw !== confirmPw) {
+      alert("비밀번호를 확인해주세요.");
+      return;
+    }
+
+    // 업데이트 할 내용을 모아준다.
+    // 아래는 DB 를 업데이트 할 내용
+    const update = {};
+    if (name != orginName) {
+      update.name = name;
+    }
+    // 새로운 이미지 파일이 있다면
+    if (image) {
+      // Storage 에 보관
+      // users폴더 / 사용자폴더 / profile.png
+      const imageRef = ref(storage, `users/${userCurrent?.uid}/profile.png`);
+      await uploadBytes(imageRef, image);
+      // db 에 저장하려고 파일의 URL 파악한다.
+      update.imageUrl = await getDownloadURL(imageRef);
+    }
+
+    // 문서를 업데이트 한다.
+    if (Object.keys(update).length > 0) {
+      // 문서 만들고 업데이트 실행
+      const userDoc = doc(db, "users", userCurrent?.uid);
+      await updateDoc(userDoc, update);
+      const nowData = { ...rUserData, ...update };
+      console.log("업데이트된 문서내용 : ", nowData);
+      // setUserData(nowData);
+      setRUserData(nowData);
+    }
+
+    // 사용자 인증 중 비밀번호 업데이트
+    if (pw) {
+      try {
+        await updatePassword(userCurrent, pw);
+      } catch (error) {
+        console.log("비밀번호 업데이트 중 오류가 발생하였습니다.", error);
+      }
+    }
+
+    alert("정보가 수정 되었습니다.");
+    navigate("/profile");
+  };
+
+  // 초기값 설정
+  useEffect(() => {
+    if (rUserData) {
+      setName(rUserData.name);
+      // 기존 이름을 보관
+      setOriginName(rUserData.name);
+      setEmail(rUserData.email);
+      setPreviewImage(rUserData.imageUrl || "");
+      // 이미지 변경을 고려해서 기존 내용 보관
+      setOriginImage(rUserData.imageUrl || "");
+    }
+  }, [rUserData]);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h1 className="text-2xl font-bold mb-4">프로필 수정</h1>
+
+      <div className="p-4 bg-white shadow-md rounded w-80">
+        <div className="mb-2">
+          <label className="block text-gray-700">이름</label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="이름"
+            className="mt-1 p-2 border border-gray-300 rounder w-full"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block text-gray-700">이메일</label>
+          <input
+            type="email"
+            value={email}
+            readOnly
+            disabled
+            placeholder="이메일"
+            className="mt-1 p-2 border border-gray-300 rounder w-full"
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700">프로필 이미지</label>
+          <div className="flex items-center mt-1">
+            <label className="cursor-pointer p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+              파일선택
+              <input
+                type="file"
+                onChange={e => handleChangeImage(e)}
+                className="hidden"
+              />
+            </label>
+            {previewImage && (
+              <img
+                src={previewImage}
+                className="ml-4 w-16 h-16 object-cover rounded-full"
+              />
+            )}
+          </div>
+        </div>
+        <div className="mb-2">
+          <label className="block text-gray-700">새 비밀번호</label>
+          <input
+            type="password"
+            value={pw}
+            onChange={e => setPw(e.target.value)}
+            placeholder="새 비밀번호"
+            className="mt-1 p-2 border border-gray-300 rounded w-full"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block text-gray-700">비밀번호 확인</label>
+          <input
+            type="password"
+            value={confirmPw}
+            onChange={e => setConfirmPw(e.target.value)}
+            placeholder="비밀번호 확인"
+            className="mt-1 p-2 border border-gray-300 rounded w-full"
+          />
+        </div>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => {
+              handleClickUpdate();
+            }}
+            className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+          >
+            수정
+          </button>
+          <button className="p-2 bg-gray-400 text-white rounded hover:bg-gray-500 w-full">
+            취소
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default EditProfile;
+```

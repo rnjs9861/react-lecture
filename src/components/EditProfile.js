@@ -5,11 +5,20 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { updatePassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { recoil_UserCurrent, recoil_UserData } from "../atoms/userAtom";
 
 const EditProfile = () => {
   const navigate = useNavigate();
   // 커스텀 훅 사용
-  const userObject = useAuth();
+  const { userCurrent } = useAuth();
+  // console.log("EditProfile userCurrent : ", userCurrent);
+
+  // FB 사용자 인증 정보
+  // const [rUserCurrent, setRUserCurrent] = useRecoilState(recoil_UserCurrent);
+  // 사용자 정보를 저장함
+  const [rUserData, setRUserData] = useRecoilState(recoil_UserData);
+
   // 변경해야할 변수
   const [name, setName] = useState("");
   const [orginName, setOriginName] = useState("");
@@ -63,10 +72,7 @@ const EditProfile = () => {
     if (image) {
       // Storage 에 보관
       // users폴더 / 사용자폴더 / profile.png
-      const imageRef = ref(
-        storage,
-        `users/${auth.currentUser.uid}/profile.png`,
-      );
+      const imageRef = ref(storage, `users/${userCurrent?.uid}/profile.png`);
       await uploadBytes(imageRef, image);
       // db 에 저장하려고 파일의 URL 파악한다.
       update.imageUrl = await getDownloadURL(imageRef);
@@ -75,15 +81,18 @@ const EditProfile = () => {
     // 문서를 업데이트 한다.
     if (Object.keys(update).length > 0) {
       // 문서 만들고 업데이트 실행
-      const userDoc = doc(db, "users", auth.currentUser.uid);
+      const userDoc = doc(db, "users", userCurrent?.uid);
       await updateDoc(userDoc, update);
-      // console.log("업데이트된 문서내용 : ", update);
+      const nowData = { ...rUserData, ...update };
+      console.log("업데이트된 문서내용 : ", nowData);
+      // setUserData(nowData);
+      setRUserData(nowData);
     }
 
     // 사용자 인증 중 비밀번호 업데이트
     if (pw) {
       try {
-        await updatePassword(auth.currentUser, pw);
+        await updatePassword(userCurrent, pw);
       } catch (error) {
         console.log("비밀번호 업데이트 중 오류가 발생하였습니다.", error);
       }
@@ -92,42 +101,24 @@ const EditProfile = () => {
     alert("정보가 수정 되었습니다.");
     navigate("/profile");
   };
-  // FB 데이터 읽기
-  const fetchUserData = async () => {
-    console.log("auth.currentUser : ", auth?.currentUser?.uid);
-    try {
-      // 레퍼런스 참조
-      const docRef = doc(db, "users", auth?.currentUser?.uid);
-      const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
-        // console.log("Document data:", docSnap.data());
-        const data = docSnap.data();
-        setName(data.name);
-        // 기존 이름을 보관
-        setOriginName(data.name);
-        setEmail(data.email);
-        setPreviewImage(data.imageUrl || "");
-        // 이미지 변경을 고려해서 기존 내용 보관
-        setOriginImage(data.imageUrl || "");
-      } else {
-        // docSnap.data() will be undefined in this case
-        console.log("No such document!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   // 초기값 설정
   useEffect(() => {
-    console.log("편집 시작");
-    // DB 에서 사용자값을 읽어들이고, 각 state 를 Set 을 한다.
-    fetchUserData();
-  }, []);
+    if (rUserData) {
+      setName(rUserData.name);
+      // 기존 이름을 보관
+      setOriginName(rUserData.name);
+      setEmail(rUserData.email);
+      setPreviewImage(rUserData.imageUrl || "");
+      // 이미지 변경을 고려해서 기존 내용 보관
+      setOriginImage(rUserData.imageUrl || "");
+    }
+  }, [rUserData]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="text-2xl font-bold mb-4">프로필 수정</h1>
+
       <div className="p-4 bg-white shadow-md rounded w-80">
         <div className="mb-2">
           <label className="block text-gray-700">이름</label>

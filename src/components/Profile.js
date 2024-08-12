@@ -1,43 +1,50 @@
-import React from "react";
-import useAuth from "../hooks/useAuth";
-import { FaUserCircle } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { db, storage } from "../firebaseConfig";
+import { deleteUser } from "firebase/auth";
 import { deleteDoc, doc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
-import { deleteUser } from "firebase/auth";
+import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { recoil_UserData } from "../atoms/userAtom";
+import { db, storage } from "../firebaseConfig";
+import useAuth from "../hooks/useAuth";
 
 const Profile = () => {
-  const userObject = useAuth();
+  const { userCurrent } = useAuth();
+  // 사용자 정보를 저장함
+  const [rUserData, setRUserData] = useRecoilState(recoil_UserData);
+
   const navigate = useNavigate();
   const handleClickEdit = () => {
     navigate("/edit-profile");
   };
-  const handleClickDeleteUser = async () => {
-    console.log(userObject.userCurrent);
 
-    // 탈퇴여부 확인
+  const handleClickDeleteUser = async () => {
+    // console.log(userObject.userCurrent);
+    // 탈퇴 여부 확인
     const flag = window.confirm(
-      "정말로 회원탈퇴 하시겠습니까? \n이 작업은 되돌리수 없습니다.",
+      "정말 탈퇴 하시겠습니까? \n이 작업은 되돌릴 수 없습니다.",
     );
 
     if (flag) {
       try {
         // 1. db 문서 삭제
-        const userDocRef = doc(db, "users", userObject.userCurrent.uid);
+        const userDocRef = doc(db, "users", userCurrent?.uid);
         await deleteDoc(userDocRef);
         // 2. image 파일 삭제
-        if (userObject.userData.imageUrl) {
+        if (rUserData?.imageUrl) {
           const imageRef = ref(
             storage,
-            `users/${userObject.userCurrent.uid}/profile.png`,
+            `users/${userCurrent?.uid}/profile.png`,
           );
           await deleteObject(imageRef);
         }
         // 3. 사용자 삭제
-        await deleteUser(userObject.userCurrent);
+        await deleteUser(userCurrent);
         // 4. 안내창
         alert("회원탈퇴가 완료되었습니다.");
+
+        setRUserData(null);
+
         // 5. 패스이동("/")
         navigate("/");
       } catch (error) {
@@ -46,22 +53,23 @@ const Profile = () => {
       }
     }
   };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="text-2xl font-bold mb-4">프로필</h1>
-      {userObject.userData && (
+      {rUserData && (
         <div className="flex flex-col items-center">
-          {userObject.userData.imageUrl ? (
+          {rUserData?.imageUrl ? (
             <img
-              src={userObject.userData.imageUrl}
+              src={rUserData?.imageUrl}
               alt="Profile Image"
               className="w-32 h-32 rounded-full mr-2"
             />
           ) : (
-            <FaUserCircle className="w-32 h-32 text-gray-500 mr-2" />
+            <FaUserCircle className="w-32 h-32 text-gray-400 mr-2" />
           )}
-          <p className="text-lg mb-2">이름: {userObject.userData.name}</p>
-          <p className="text-lg mb-4">이메일: {userObject.userData.email}</p>
+          <p className="text-lg mb-2">이름 : {rUserData?.name}</p>
+          <p className="text-lg mb-4">이메일 : {rUserData?.email}</p>
           <div className="flex space-x-4">
             <button
               onClick={() => {
