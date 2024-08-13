@@ -83,10 +83,6 @@ const Login = () => {
   const { userCurrent, setUserCurrent } = useAuth();
   // 사용자 정보를 저장함
   const [rUserData, setRUserData] = useRecoilState(recoil_UserData);
-  // Recoil 값 읽어서 처리하기
-  // initEditState.email = rUserData.email;
-  // initEditState.name = rUserData.email;
-  // React Hook form setValue(rUserData.email)
 
   // 패스이동하기
   const navigate = useNavigate();
@@ -200,6 +196,11 @@ const Login = () => {
     }
   };
 
+  // 비밀번호 찾기
+  const handleClickPass = () => {
+    navigate("/findpass");
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="text-2xl font-bold mb-4">
@@ -256,15 +257,27 @@ const Login = () => {
             >
               로그인
             </button>
-            <button
-              className="text-blue-500 hover:underline"
-              onClick={() => {
-                setIsScene("join");
-                setError("");
-              }}
-            >
-              계정만들기
-            </button>
+
+            <div className="flex justify-center items-center gap-4 w-80">
+              <button
+                className="text-blue-500 hover:underline"
+                onClick={() => {
+                  setIsScene("join");
+                  setError("");
+                }}
+              >
+                계정만들기
+              </button>
+
+              <button
+                className="text-blue-500 hover:underline"
+                onClick={() => {
+                  handleClickPass();
+                }}
+              >
+                비밀번호찾기
+              </button>
+            </div>
           </form>
         </>
       ) : (
