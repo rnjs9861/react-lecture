@@ -34,17 +34,17 @@ const FindPass = () => {
 
   // 데이터 전송
   const handleFindPassSubmit = async data => {
-    console.log(data.email);
+    // console.log(data.email);
     try {
       const res = await sendPasswordResetEmail(auth, data.email);
-      console.log(res);
+      //   console.log(res);
       alert("비밀번호 재설정 메일을 보내드렸습니다. 확인해 주세요.");
       navigate("/");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log("errorCode", errorCode);
-      console.log("errorMessage", errorMessage);
+      //   console.log("errorCode", errorCode);
+      //   console.log("errorMessage", errorMessage);
 
       switch (errorCode) {
         case "auth/user-not-found":

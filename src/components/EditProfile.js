@@ -70,12 +70,7 @@ const EditProfile = () => {
   // React Hook Form setValue(rUserData.name)
 
   // 변경해야할 변수
-  const [name, setName] = useState("");
   const [orginName, setOriginName] = useState("");
-  const [email, setEmail] = useState("");
-  // const [pw, setPw] = useState("");
-  // const [confirmPw, setConfirmPw] = useState("");
-  // const [image, setImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [originImage, setOriginImage] = useState(null);
 
@@ -84,7 +79,6 @@ const EditProfile = () => {
     const file = e.target.files[0];
     if (file) {
       // 전송용 파일
-      // setImage(file);
       editForm.setValue("image", file);
       // file 을 미리보기로 만든다.
       const reader = new FileReader();
@@ -96,23 +90,6 @@ const EditProfile = () => {
   };
   // FB 데이터 업데이트
   const handleClickUpdate = async data => {
-    // if (!name) {
-    //   alert("이름을 입력하세요.");
-    //   return;
-    // }
-    // if (!pw) {
-    //   //alert("비밀번호를 입력하세요.");
-    //   return;
-    // }
-    // if (!confirmPw) {
-    //   alert("비밀번호 확인를 입력하세요.");
-    //   return;
-    // }
-    // if (pw !== confirmPw) {
-    //   alert("비밀번호를 확인해주세요.");
-    //   return;
-    // }
-
     // 업데이트 할 내용을 모아준다.
     // 아래는 DB 를 업데이트 할 내용
     const update = {};
@@ -136,7 +113,6 @@ const EditProfile = () => {
       await updateDoc(userDoc, update);
       const nowData = { ...rUserData, ...update };
       console.log("업데이트된 문서내용 : ", nowData);
-      // setUserData(nowData);
       setRUserData(nowData);
     }
     alert("정보가 수정 되었습니다.");
@@ -161,11 +137,9 @@ const EditProfile = () => {
   // 초기값 설정
   useEffect(() => {
     if (rUserData) {
-      // setName(rUserData.name);
       editForm.setValue("name", rUserData.name);
       // 기존 이름을 보관
       setOriginName(rUserData.name);
-      // setEmail(rUserData.email);
       editForm.setValue("email", rUserData.email);
       setPreviewImage(rUserData.imageUrl || "");
       // 이미지 변경을 고려해서 기존 내용 보관
